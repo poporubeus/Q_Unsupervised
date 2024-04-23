@@ -1,27 +1,11 @@
 import numpy as np
 import pennylane as qml
-from sklearn.datasets import make_blobs
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
-from sklearn.metrics import adjusted_rand_score
-from sklearn.preprocessing import MinMaxScaler
-from data_creation import DataLoading
+from data_creation import X, seed, clusters
 
 
-seed = 99
-min_features = -np.pi/4
-max_features = 3*np.pi/4
-clusters = 3
-features = 2
-elem = 100
 n_qubits = 3
-shots = 1024
+shots = 2048
 device = qml.device("default.qubit", wires=n_qubits)
-
-data = DataLoading(seed=seed, min_features=min_features, max_features=max_features,
-                   clusters=clusters, n_features=features, n_elements=elem)
-
-X, y = data.GetPoints(rescaling=True)
 
 
 @qml.qnode(device=device, shots=shots)
@@ -165,8 +149,5 @@ class QuantumKmeans:
         return clusters, centroids
 
 
-Qkmeans = QuantumKmeans(seed=seed, k=clusters, data=X)
-clusters, centroids = Qkmeans.kmeans_quantum(max_iter=20, threshold=0.0001)
-
-print("Cluster assignments:\n", clusters)
-print("Final centroids (quantum):\n", centroids)
+q_kmeans = QuantumKmeans(seed=seed, k=clusters, data=X)
+clusters, centroids = q_kmeans.kmeans_quantum(max_iter=20, threshold=0.0001)
